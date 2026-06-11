@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "relaypipe"
-version = "0.1.0"
+version = "0.1.1"
 description = "Chain any AI coding CLIs (Claude, Codex, Gemini, Aider, ...) into an approve-once pipeline."
 readme = "README.md"
 requires-python = ">=3.9"
