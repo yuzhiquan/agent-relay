@@ -2,6 +2,8 @@
 
 **Chain any AI coding CLIs into an approve-once pipeline.**
 
+> English | [中文](README.zh-CN.md)
+
 You give a target. One agent plans, another reviews the plan, another implements
 it — automatically, with no copy-pasting between them. The only time it stops for
 you is the final gate, right before anything is committed.
