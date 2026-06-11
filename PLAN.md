@@ -1,0 +1,78 @@
+# agent-relay — Build Plan
+
+agent-relay chains independent AI coding CLIs (Claude Code, OpenAI Codex, Gemini
+CLI, Aider, or any tool via a generic adapter) into a single pipeline. One agent
+plans, another reviews, another implements — with automatic file-based hand-offs
+between them and exactly one human approval gate before changes are committed.
+
+## Product Goal
+
+Given a target and a pipeline definition:
+
+```bash
+agent-relay run "Add a --json flag to the CLI" -p pipeline.yaml
+```
+
+agent-relay should:
+
+- run each step with the configured agent, in order
+- pass each step's output file to the next step as input (the hand-off medium)
+- stop only at declared approval gates (default: once, before commit)
+- support any agent CLI without code changes (generic adapter) or with a small
+  adapter class (built-in agents)
+- resume cleanly after an interruption via a persisted run journal
+
+## Architecture (three layers)
+
+1. **Agent adapters** (`adapters/`) — one class per CLI implementing
+   `build_command(ctx) -> argv`, discovered through a registry. Built-ins:
+   `claude`, `codex`, `gemini`, `aider`, `generic`. Third parties register via
+   the `agent_relay.adapters` entry-point group.
+2. **Config** (`config.py`) — YAML → `Pipeline`/`Step` dataclasses. Steps are
+   data, so adding a step or swapping an agent never touches Python.
+3. **Runner** (`runner.py`) — executes steps, renders prompts (templating
+   `{target}` and `{inputs}`), writes/reads hand-off files, enforces approval
+   gates, and journals state to `.agent-relay/state.json` for `--resume`.
+
+The CLI (`cli.py`) wires these together with `run` and `agents` subcommands.
+
+## MVP Scope — status
+
+- [x] Adapter interface + registry + entry-point plugin discovery
+- [x] Built-in adapters: claude, codex, gemini, aider, generic
+- [x] YAML pipeline config with prompt templates and file hand-offs
+- [x] Runner: ordered execution, prompt rendering, approval gates
+- [x] State journal + `--resume`
+- [x] `--dry-run` (print commands, run nothing) and `--yes` (CI auto-approve)
+- [x] CLI: `run`, `agents`
+- [x] Tests with mocked agents (no API keys / no network in CI)
+- [x] Packaging (pyproject + console script), README, CONTRIBUTING, MIT, CI
+
+## Roadmap (post-MVP)
+
+- [x] **Review loops** — a `loops:` block repeats a contiguous group of steps
+  until a verdict marker (`VERDICT: APPROVED`) appears or `max_iterations` is
+  hit. Feedback flows via the normal file hand-off. See `runner._run_loop`.
+- [x] **`agent-relay new`** — zero-config turnkey: idea → plan → review loop →
+  approve-the-plan gate → build into a chosen folder. Embeds default prompts
+  (`presets.py`) so no YAML/prompt files are needed. Uses `approve_before` so
+  the human gates the *plan* before any code is written.
+- **Conditional control flow (more)** — `on_failure: retry`, branching gates
+  (`on: review_blockers`), and per-step retry.
+- **Structured agent output** — capture JSON (`claude --output-format json`,
+  `codex --output-schema`) so gates can branch on machine-readable verdicts.
+- **Parallel steps** — fan out independent steps, join before the next.
+- **Per-step timeouts, retries, and streaming logs.**
+- **Worktree isolation** — run implement steps in a throwaway git worktree.
+- **Richer approval UX** — inline diff viewer, commit-message templating, push.
+- **`agent-relay init`** — scaffold a pipeline.yaml + prompts interactively.
+- **More adapters** — cursor-agent, continue, opencode, ollama-backed tools.
+
+## Test Plan
+
+- Unit: adapter `build_command` argv for every built-in (roles → flags).
+- Unit: generic adapter placeholder substitution and prompt-append fallback.
+- Runner: full pipeline runs all steps and threads files between them;
+  approval-gate denial aborts; `--resume` skips completed steps; `--dry-run`
+  invokes no agent. All via an injected fake agent — no real CLIs.
+- CI matrix on Python 3.9 / 3.11 / 3.13 with ruff + pytest.

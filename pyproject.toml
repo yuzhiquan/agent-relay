@@ -1,0 +1,46 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "agent-relay"
+version = "0.1.0"
+description = "Chain any AI coding CLIs (Claude, Codex, Gemini, Aider, ...) into an approve-once pipeline."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "agent-relay contributors" }]
+keywords = ["ai", "agents", "cli", "orchestration", "claude", "codex", "pipeline"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Software Development :: Build Tools",
+]
+dependencies = ["pyyaml>=6.0"]
+
+[project.optional-dependencies]
+dev = ["pytest>=7", "ruff>=0.5"]
+
+[project.scripts]
+agent-relay = "agent_relay.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/your-org/agent-relay"
+Issues = "https://github.com/your-org/agent-relay/issues"
+
+# Entry-point group third parties use to register their own adapters:
+#   [project.entry-points."agent_relay.adapters"]
+#   mytool = "my_pkg.adapter"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/agent_relay"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
