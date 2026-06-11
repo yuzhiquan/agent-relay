@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "agent-relay"
+name = "relaypipe"
 version = "0.1.0"
 description = "Chain any AI coding CLIs (Claude, Codex, Gemini, Aider, ...) into an approve-once pipeline."
 readme = "README.md"
