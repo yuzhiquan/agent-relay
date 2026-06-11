@@ -41,7 +41,7 @@
 ## 安装
 
 ```bash
-pipx install agent-relay         # 发布后可用
+pipx install relaypipe         # 发布后可用
 # 或者从源码安装：
 pip install -e ".[dev]"
 ```
@@ -53,7 +53,7 @@ pip install -e ".[dev]"
 无需 prompt 文件：
 
 ```bash
-agent-relay new "a todo-list CLI in Rust with JSON persistence" -d ./todo-cli
+relaypipe new "a todo-list CLI in Rust with JSON persistence" -d ./todo-cli
 ```
 
 执行过程：
@@ -67,35 +67,35 @@ agent-relay new "a todo-list CLI in Rust with JSON persistence" -d ./todo-cli
 实用选项：
 
 ```bash
-agent-relay new "..." -d ./app --agent codex          # 用 Codex 规划+审查+构建
-agent-relay new "..." -d ./app --agent claude --build-agent codex   # 混用 agent
-agent-relay new "..." -d ./app --max-iterations 5     # 允许更多审查轮次
-agent-relay new "..." -d ./app --dry-run              # 预览将要执行的命令
-agent-relay new "..." -d ./app --yes                  # CI 模式：跳过确认提示
+relaypipe new "..." -d ./app --agent codex          # 用 Codex 规划+审查+构建
+relaypipe new "..." -d ./app --agent claude --build-agent codex   # 混用 agent
+relaypipe new "..." -d ./app --max-iterations 5     # 允许更多审查轮次
+relaypipe new "..." -d ./app --dry-run              # 预览将要执行的命令
+relaypipe new "..." -d ./app --yes                  # CI 模式：跳过确认提示
 ```
 
-如需完全控制步骤、agent 和关卡，请编写流水线（见下文）并使用 `agent-relay run`。
+如需完全控制步骤、agent 和关卡，请编写流水线（见下文）并使用 `relaypipe run`。
 
 ## 使用
 
 ```bash
 # 列出可用的 agent
-agent-relay agents
+relaypipe agents
 
 # 运行示例流水线
-agent-relay run "Add a --json flag to the CLI" -p examples/pipeline.yaml
+relaypipe run "Add a --json flag to the CLI" -p examples/pipeline.yaml
 
 # 只预览命令，不实际执行
-agent-relay run "..." -p examples/pipeline.yaml --dry-run
+relaypipe run "..." -p examples/pipeline.yaml --dry-run
 
 # 恢复被中断的运行
-agent-relay run --resume -p examples/pipeline.yaml
+relaypipe run --resume -p examples/pipeline.yaml
 
 # CI 模式：自动通过每个关卡
-agent-relay run "..." -p pipeline.yaml --yes
+relaypipe run "..." -p pipeline.yaml --yes
 
 # 为本次运行覆盖循环上限（优先级高于 YAML 中的 max_iterations）
-agent-relay run "..." -p pipeline.yaml --max-iterations 5
+relaypipe run "..." -p pipeline.yaml --max-iterations 5
 ```
 
 ## 示例：agent-relay 改进它自己
@@ -106,10 +106,10 @@ agent-relay run "..." -p pipeline.yaml --max-iterations 5
 
 ```bash
 # 预览整条链路（读取 PLAN.md，不调用任何 API）
-agent-relay run -p examples/self-hosted/pipeline.yaml --dry-run
+relaypipe run -p examples/self-hosted/pipeline.yaml --dry-run
 
 # 真正运行
-agent-relay run -p examples/self-hosted/pipeline.yaml
+relaypipe run -p examples/self-hosted/pipeline.yaml
 ```
 
 目标已经写进了 prompt，因此无需提供位置参数形式的 target——方案文件*本身*就是输入。

@@ -42,7 +42,7 @@ Placeholders: `{prompt} {output} {workspace} {model} {role}`.
 ## Install
 
 ```bash
-pipx install agent-relay         # once published
+pipx install relaypipe         # once published
 # or, from source:
 pip install -e ".[dev]"
 ```
@@ -54,7 +54,7 @@ through review until it's solid, shows you the **final plan**, and — once you
 approve — builds the project into that folder. No YAML, no prompt files:
 
 ```bash
-agent-relay new "a todo-list CLI in Rust with JSON persistence" -d ./todo-cli
+relaypipe new "a todo-list CLI in Rust with JSON persistence" -d ./todo-cli
 ```
 
 What happens:
@@ -68,36 +68,36 @@ What happens:
 Useful options:
 
 ```bash
-agent-relay new "..." -d ./app --agent codex          # use Codex to plan+review+build
-agent-relay new "..." -d ./app --agent claude --build-agent codex   # mix agents
-agent-relay new "..." -d ./app --max-iterations 5     # allow more review rounds
-agent-relay new "..." -d ./app --dry-run              # preview the commands
-agent-relay new "..." -d ./app --yes                  # CI: skip the approval prompt
+relaypipe new "..." -d ./app --agent codex          # use Codex to plan+review+build
+relaypipe new "..." -d ./app --agent claude --build-agent codex   # mix agents
+relaypipe new "..." -d ./app --max-iterations 5     # allow more review rounds
+relaypipe new "..." -d ./app --dry-run              # preview the commands
+relaypipe new "..." -d ./app --yes                  # CI: skip the approval prompt
 ```
 
 For full control over steps, agents, and gates, write a pipeline (below) and use
-`agent-relay run`.
+`relaypipe run`.
 
 ## Use
 
 ```bash
 # list available agents
-agent-relay agents
+relaypipe agents
 
 # run the example pipeline
-agent-relay run "Add a --json flag to the CLI" -p examples/pipeline.yaml
+relaypipe run "Add a --json flag to the CLI" -p examples/pipeline.yaml
 
 # preview commands without running anything
-agent-relay run "..." -p examples/pipeline.yaml --dry-run
+relaypipe run "..." -p examples/pipeline.yaml --dry-run
 
 # resume an interrupted run
-agent-relay run --resume -p examples/pipeline.yaml
+relaypipe run --resume -p examples/pipeline.yaml
 
 # CI mode: auto-approve every gate
-agent-relay run "..." -p pipeline.yaml --yes
+relaypipe run "..." -p pipeline.yaml --yes
 
 # override the loop cap for this run (beats max_iterations in the YAML)
-agent-relay run "..." -p pipeline.yaml --max-iterations 5
+relaypipe run "..." -p pipeline.yaml --max-iterations 5
 ```
 
 ## Example: agent-relay improving itself
@@ -109,10 +109,10 @@ for your approval before you commit:
 
 ```bash
 # preview the chain (reads PLAN.md, no API calls)
-agent-relay run -p examples/self-hosted/pipeline.yaml --dry-run
+relaypipe run -p examples/self-hosted/pipeline.yaml --dry-run
 
 # run it for real
-agent-relay run -p examples/self-hosted/pipeline.yaml
+relaypipe run -p examples/self-hosted/pipeline.yaml
 ```
 
 The goal is baked into the prompts, so no positional target is needed — the

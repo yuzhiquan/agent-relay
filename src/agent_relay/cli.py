@@ -149,10 +149,10 @@ def cmd_agents(_: argparse.Namespace) -> int:
 
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
-        prog="agent-relay",
+        prog="relaypipe",
         description="Chain any AI coding CLIs into an approve-once pipeline.",
     )
-    p.add_argument("--version", action="version", version=f"agent-relay {__version__}")
+    p.add_argument("--version", action="version", version=f"relaypipe {__version__}")
     sub = p.add_subparsers(dest="command", required=True)
 
     r = sub.add_parser("run", help="run a pipeline")

@@ -10,7 +10,7 @@ between them and exactly one human approval gate before changes are committed.
 Given a target and a pipeline definition:
 
 ```bash
-agent-relay run "Add a --json flag to the CLI" -p pipeline.yaml
+relaypipe run "Add a --json flag to the CLI" -p pipeline.yaml
 ```
 
 agent-relay should:
@@ -53,7 +53,7 @@ The CLI (`cli.py`) wires these together with `run` and `agents` subcommands.
 - [x] **Review loops** — a `loops:` block repeats a contiguous group of steps
   until a verdict marker (`VERDICT: APPROVED`) appears or `max_iterations` is
   hit. Feedback flows via the normal file hand-off. See `runner._run_loop`.
-- [x] **`agent-relay new`** — zero-config turnkey: idea → plan → review loop →
+- [x] **`relaypipe new`** — zero-config turnkey: idea → plan → review loop →
   approve-the-plan gate → build into a chosen folder. Embeds default prompts
   (`presets.py`) so no YAML/prompt files are needed. Uses `approve_before` so
   the human gates the *plan* before any code is written.
