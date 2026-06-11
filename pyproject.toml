@@ -28,8 +28,8 @@ dev = ["pytest>=7", "ruff>=0.5"]
 agent-relay = "agent_relay.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/your-org/agent-relay"
-Issues = "https://github.com/your-org/agent-relay/issues"
+Homepage = "https://github.com/yuzhiquan/agent-relay"
+Issues = "https://github.com/yuzhiquan/agent-relay/issues"
 
 # Entry-point group third parties use to register their own adapters:
 #   [project.entry-points."agent_relay.adapters"]
