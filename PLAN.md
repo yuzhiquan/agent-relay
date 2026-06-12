@@ -68,6 +68,43 @@ The CLI (`cli.py`) wires these together with `run` and `agents` subcommands.
 - **`agent-relay init`** — scaffold a pipeline.yaml + prompts interactively.
 - **More adapters** — cursor-agent, continue, opencode, ollama-backed tools.
 
+## Design honesty: what this is, and isn't
+
+agent-relay is a **coordination layer**, not an agent. The hard parts —
+reasoning, tool use, error recovery — happen *inside* the CLIs it calls. Its
+contribution is the glue: ordered hand-offs, a bounded review loop, and one
+human gate. Worth being clear-eyed about the limits:
+
+- **It's a thin wrapper.** For a fixed chain, a shell script
+  (`claude … > PLAN.md && codex review PLAN.md > review.md && …`) gets you most
+  of the way. The real added value is the loop, `--resume`, and YAML config.
+- **The hand-off is text-parsed.** Steps coordinate by reading each other's
+  output files and matching a `VERDICT:` string. That's brittle: CLI flags and
+  output formats change, and we're consuming interfaces never meant for machine
+  chaining.
+- **The moat is shrinking.** Single-vendor tools increasingly ship this
+  natively — subagents, plan-then-approve modes, hooks/slash-commands. The one
+  thing they *can't* do is orchestrate a **competitor's** CLI. That cross-vendor
+  angle is agent-relay's only durable differentiator.
+
+### v2 direction (highest-leverage moves)
+
+1. **Structured hand-offs over text parsing.** Where a CLI supports it
+   (`claude --output-format json`, `codex --output-schema`), capture a
+   machine-readable verdict/result instead of grepping for `VERDICT:`. Gates and
+   loops branch on a field, not a substring. Falls back to text only when no
+   structured mode exists. (Supersedes the "Structured agent output" bullet.)
+2. **Lean into cross-vendor.** Treat "plan with Claude, implement with Codex" as
+   the headline use case — the capability no native subagent system offers.
+   Document mixed-agent recipes; make per-step model/agent selection first-class.
+3. **What scripts can't give cheaply.** Per-agent observability, retries, and
+   **cost/latency tracking across heterogeneous agents** — the operational layer
+   that justifies a tool over a Makefile.
+
+If none of these land, the honest framing is: a clean, well-packaged **design
+exploration** of file-based multi-agent hand-offs — valuable as a reference
+pattern, not as a tool to depend on.
+
 ## Test Plan
 
 - Unit: adapter `build_command` argv for every built-in (roles → flags).

@@ -215,6 +215,26 @@ Two ways:
    Ship it as a separate package by registering the
    `agent_relay.adapters` entry point — no fork needed.
 
+## Limitations & where this fits
+
+Being honest about what this is: a **coordination layer**, not an agent. The
+reasoning happens inside the CLIs it calls; agent-relay just wires them together.
+
+- **It's a thin wrapper.** For a fixed chain, a shell script gets you most of the
+  way — the real value here is the bounded loop, `--resume`, and YAML config.
+- **Hand-offs are text-based.** Steps coordinate via output files and a
+  `VERDICT:` marker, which is simple but brittle as CLI output formats change.
+  Moving to structured (JSON) hand-offs is the top roadmap item — see
+  [`PLAN.md`](PLAN.md).
+- **Single-vendor tools are catching up.** Claude Code subagents, plan-then-
+  approve modes, and hooks already cover the in-one-tool case natively. The
+  durable differentiator is **cross-vendor** orchestration — e.g. *plan with
+  Claude, implement with Codex* — which no single vendor's subagent system does.
+
+So if you live entirely inside one tool, prefer its native subagents/plan mode.
+Reach for agent-relay when you want to **mix agents from different vendors** in
+one gated pipeline. See [`PLAN.md`](PLAN.md) for the v2 direction.
+
 ## Development
 
 ```bash
