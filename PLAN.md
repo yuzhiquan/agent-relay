@@ -22,6 +22,12 @@ agent-relay should:
   adapter class (built-in agents)
 - resume cleanly after an interruption via a persisted run journal
 
+Non-goal: agent-relay should not try to replace a single agent's native planning,
+subagent, hook, or approval workflow. If one tool can handle the whole task well,
+the native path should remain the recommendation. agent-relay earns its place
+when a workflow needs independent CLIs, especially from different vendors, to
+cooperate through explicit hand-offs and gates.
+
 ## Architecture (three layers)
 
 1. **Agent adapters** (`adapters/`) — one class per CLI implementing
@@ -57,10 +63,16 @@ The CLI (`cli.py`) wires these together with `run` and `agents` subcommands.
   approve-the-plan gate → build into a chosen folder. Embeds default prompts
   (`presets.py`) so no YAML/prompt files are needed. Uses `approve_before` so
   the human gates the *plan* before any code is written.
-- **Conditional control flow (more)** — `on_failure: retry`, branching gates
-  (`on: review_blockers`), and per-step retry.
 - **Structured agent output** — capture JSON (`claude --output-format json`,
   `codex --output-schema`) so gates can branch on machine-readable verdicts.
+- **Mixed-agent recipes** — document and test first-class examples such as
+  Claude planning, Codex reviewing, and Aider/Codex implementing. This should be
+  the headline path, not an edge case.
+- **Operational layer beyond scripts** — per-step observability, retry policy,
+  elapsed time, token/cost capture where available, and clearer failure
+  summaries across heterogeneous agents.
+- **Conditional control flow (more)** — `on_failure: retry`, branching gates
+  (`on: review_blockers`), and per-step retry.
 - **Parallel steps** — fan out independent steps, join before the next.
 - **Per-step timeouts, retries, and streaming logs.**
 - **Worktree isolation** — run implement steps in a throwaway git worktree.
@@ -78,6 +90,10 @@ human gate. Worth being clear-eyed about the limits:
 - **It's a thin wrapper.** For a fixed chain, a shell script
   (`claude … > PLAN.md && codex review PLAN.md > review.md && …`) gets you most
   of the way. The real added value is the loop, `--resume`, and YAML config.
+- **Native single-agent workflows may be the right answer.** Codex, Claude Code,
+  and similar tools can already plan, edit, test, review diffs, and ask for
+  approval inside one session. agent-relay should point users there when no
+  cross-agent hand-off is needed.
 - **The hand-off is text-parsed.** Steps coordinate by reading each other's
   output files and matching a `VERDICT:` string. That's brittle: CLI flags and
   output formats change, and we're consuming interfaces never meant for machine
@@ -100,6 +116,14 @@ human gate. Worth being clear-eyed about the limits:
 3. **What scripts can't give cheaply.** Per-agent observability, retries, and
    **cost/latency tracking across heterogeneous agents** — the operational layer
    that justifies a tool over a Makefile.
+
+### Decision test
+
+Keep investing if the project makes cross-vendor workflows materially easier
+than native tools, shell scripts, or CI. Deprioritize features that only recreate
+one agent's built-in plan/review/implement loop. The durable value is not "an
+agent that calls agents"; it is a reliable relay for independent tools with
+explicit state, approvals, recovery, and measurable runs.
 
 If none of these land, the honest framing is: a clean, well-packaged **design
 exploration** of file-based multi-agent hand-offs — valuable as a reference

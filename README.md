@@ -222,6 +222,10 @@ reasoning happens inside the CLIs it calls; agent-relay just wires them together
 
 - **It's a thin wrapper.** For a fixed chain, a shell script gets you most of the
   way — the real value here is the bounded loop, `--resume`, and YAML config.
+- **Native agent workflows may be better.** If your whole workflow lives inside
+  one tool, use that tool's plan mode, subagents, hooks, slash commands, or
+  built-in approval flow first. agent-relay is not trying to beat a native
+  single-agent experience.
 - **Hand-offs are text-based.** Steps coordinate via output files and a
   `VERDICT:` marker, which is simple but brittle as CLI output formats change.
   Moving to structured (JSON) hand-offs is the top roadmap item — see
@@ -234,6 +238,18 @@ reasoning happens inside the CLIs it calls; agent-relay just wires them together
 So if you live entirely inside one tool, prefer its native subagents/plan mode.
 Reach for agent-relay when you want to **mix agents from different vendors** in
 one gated pipeline. See [`PLAN.md`](PLAN.md) for the v2 direction.
+
+## Alternatives
+
+- **Native agent features** — best when one CLI can plan, edit, test, review,
+  and ask for approval on its own.
+- **Shell scripts or Makefiles** — enough for a fixed `plan > review > build`
+  chain when you do not need retries, resume, or configurable gates.
+- **CI workflows** — a better fit when the hand-off should happen after pushes,
+  pull requests, or scheduled jobs.
+- **Codex skills/plugins or Claude slash commands** — useful when the goal is
+  to teach one agent a repeatable workflow instead of coordinating independent
+  CLIs.
 
 ## Development
 

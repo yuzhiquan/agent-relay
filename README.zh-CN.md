@@ -215,6 +215,9 @@ loops:
 
 - **它是一层薄封装。** 对于固定的链路，一个 shell 脚本就能完成大部分工作——
   这里真正的价值在于有上限的审查循环、`--resume` 和 YAML 配置。
+- **原生 agent 工作流可能更合适。** 如果整个流程都在一个工具内完成，优先使用该工具的
+  plan mode、subagents、hooks、slash commands 或内置审批流。agent-relay 不试图取代
+  单一工具内的原生体验。
 - **交接是基于文本的。** 各步骤通过输出文件和 `VERDICT:` 标记来协调，简单但脆弱——
   CLI 的输出格式一旦变化就容易出问题。改用结构化（JSON）交接是路线图的首要事项，
   参见 [`PLAN.md`](PLAN.md)。
@@ -226,6 +229,16 @@ loops:
 所以，如果你完全在一个工具内工作，优先用它原生的 subagents / 规划模式。
 当你想在一条带人工关卡的流水线里**混用不同厂商的 agent** 时，再来用 agent-relay。
 v2 方向参见 [`PLAN.md`](PLAN.md)。
+
+## 替代方案
+
+- **原生 agent 功能**——当一个 CLI 已经能完成规划、编辑、测试、审查和审批时，这是首选。
+- **Shell 脚本或 Makefile**——适合固定的 `plan > review > build` 链路，前提是不需要重试、
+  恢复或可配置关卡。
+- **CI 工作流**——当交接应该发生在 push、PR 或定时任务之后时，GitHub Actions 等 CI
+  系统通常更自然。
+- **Codex skills/plugins 或 Claude slash commands**——当目标是让单个 agent 学会一个可复用
+  流程，而不是协调多个独立 CLI 时更合适。
 
 ## 开发
 
